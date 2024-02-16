@@ -18,7 +18,7 @@ const checkPasswordRepeat = () => {
   const passwordField = document.querySelector(".profile input[name=password]");
   if(passwordField.value == repeatPasswordField.value) {
     repeatPasswordField.setCustomValidity("");
-    return;
+
   } else {
     repeatPasswordField.setCustomValidity("Password doesn't match");
   }
@@ -173,17 +173,9 @@ function logout() {
   hideOrShowElements()
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  route()
-  showUsername()
-})
-
-window.addEventListener("popstate", route)
 
 function updateUsername() {
-  const API_KEY = localStorage.getItem('api_key');
   let user_name = document.getElementById("update-username-input").value;
-  console.log(user_name)
 
   const url = "/api/user/name"
   fetch(url, {
@@ -206,11 +198,11 @@ function updateUsername() {
   })
 }
 
+const API_KEY = localStorage.getItem('api_key');
+
 function updatePassword() {
   const API_KEY = localStorage.getItem('api_key');
   let password = document.getElementById("update-password-input").value;
-  console.log(password)
-
   const url = "/api/user/password"
   fetch(url, {
     method: 'POST',
@@ -231,20 +223,114 @@ function updatePassword() {
   })
 }
 
+function createRoom() {
+  const url = "/api/rooms/new-room"
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'API-Key': API_KEY
+    },
+  }).then(response => {
+    return response.json()
+  }).then(room => {
+    alert("Room Created Successfully! Navigating to the room...")
+    let room_name = document.getElementById("room-name")
+    const inviteLink = document.querySelector(".invite")
+    let text = inviteLink.textContent
+    room_name.innerHTML = room.name
+    inviteLink.textContent = text + String(room.id)
+    CURRENT_ROOM = room.id
+    history.pushState({path: `/rooms/${CURRENT_ROOM}`}, '', `/rooms/${CURRENT_ROOM}`);
+    window.dispatchEvent(new Event('popstate'));
+    getMessage()
+  }).catch(error => {
+    console.log(`Error: ${error}`)
+  })
+}
 
-// TODO:  When  displaying a page, update the DOM to show the appropriate content for any element
-//        that currently contains a {{ }} placeholder. You do not have to parse variable names out
-//        of the curly  braces—they are for illustration only. You can just replace the contents
-//        of the parent element (and in fact can remove the {{}} from index.html if you want).
+function showRooms() {
+  const url = "/api/rooms"
+  let roomList = document.body.querySelector(".roomList");
+  let zeroRoomDiv = document.body.querySelector(".noRooms");
+  roomList.innerHTML = '';
 
-// TODO:  Handle clicks on the UI elements.
-//        - Send API requests with fetch where appropriate.
-//        - Parse the results and update the page.
-//        - When the user goes to a new "page" ("/", "/login", "/profile", or "/room"), push it to
-//          History
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then(response => {
+    return response.json()
+  }).then(data => {
+    roomList.innerHTML = ""
+    zeroRoomDiv.classList.add("hide")
+    if (data.length === 0) {
+      zeroRoomDiv.classList.remove("hide")
+    }
+    data.forEach(room => {
+      anchor = renderRoom(room)
+      roomList.appendChild(anchor)
+    })
 
-// TODO:  When a user enters a room, start a process that queries for new chat messages every 0.1
-//        seconds. When the user leaves the room, cancel that process.
-//        (Hint: https://developer.mozilla.org/en-US/docs/Web/API/setInterval#return_value)
+  }).catch(error => {
+    console.log(`Error: ${error}`)
+  })
+}
 
-// On page load, show the appropriate page and hide the others
+function gotoRoom(room_id) {
+  history.pushState({path: `/rooms/${room_id}`}, '', `/rooms/${room_id}`);
+  window.dispatchEvent(new Event('popstate'));
+}
+
+function renderRoom(room) {
+  const newRoomAnchor = document.createElement("a")
+  newRoomAnchor.textContent = room.id + room.name
+  newRoomAnchor.addEventListener("click", (event) => {
+    gotoRoom(room.id)
+  })
+  return newRoomAnchor
+}
+
+function renderMessages(msg, container) {
+    const messageElement = document.createElement("message");
+    const authorElement = document.createElement("author")
+    const contentElement = document.createElement("content")
+    contentElement.textContent = msg["body"]
+    authorElement.textContent = msg["name"]
+    messageElement.appendChild(contentElement)
+    messageElement.appendChild(authorElement)
+    container.appendChild(messageElement);
+}
+
+function getMessage() {
+    const inviteLink = document.querySelector(".invite")
+    // src: https://stackoverflow.com/questions/10539299/getting-link-text-within-a-div
+    const text = inviteLink
+                   .getElementsByTagName('a')[0].innerHTML
+    const room_id = Number(text.slice(text.length - 1))
+    const url = `/api/rooms/${room_id}/messages`
+    fetch(url, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'API-Key': API_KEY
+        }
+    }).then(response => response.json())
+        .then(msgs => {
+            const container = document.querySelector(".messages");
+            container.innerHTML = "";
+            msgs.forEach(msg => {
+              renderMessages(msg, container)
+            });
+        })
+        .catch(error => console.log(`Error: ${error}`))
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  route()
+  showUsername()
+  showRooms()
+})
+
+window.addEventListener("popstate", route)

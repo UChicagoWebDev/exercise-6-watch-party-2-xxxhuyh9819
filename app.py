@@ -99,21 +99,6 @@ def login():
     }), 200
 
 
-# @app.route('/api/user/name', methods=['POST'])
-# def update_username():
-#     api_key = request.headers.get('API_Key')
-#     if not api_key:
-#         print("No API key!")
-#         return {}, 403
-#     query = "select * from users where api_key = ?"
-#     user = query_db(query, api_key, one=True)
-#     user_id = user["id"]
-#     new_name = request.json.get('user_name')
-#     query = 'update users set name = ? where id = ?'
-#     query_db(query, (new_name, user_id), one=True)
-#     return jsonify({'message': f"Username: {new_user['name']} updated successfully"}), 200
-
-
 @app.route('/api/user/name', methods=['POST'])
 def update_username():
     api_key = request.headers.get('API-Key')
@@ -147,3 +132,46 @@ def update_password():
     query = "update users set password = ? where id = ?"
     query_db(query, (password, user_id), one=True)
     return {}, 200
+
+
+@app.route('/api/rooms/new-room', methods=['POST'])
+def create_room():
+    api_key = request.headers.get('API-Key')
+    if not api_key:
+        return jsonify({"API Key not found!"}), 403
+
+    room_name = "Unnamed Room #" + ''.join(random.choices(string.digits, k=6))
+    query = "insert into rooms (name) values (?) returning id, name"
+    room = query_db(query, [room_name], one=True)
+    if not room:
+        return {}, 403
+    return jsonify({
+        'id': room['id'],
+        'name': room['name'],
+    }), 200
+
+@app.route('/api/rooms', methods=['GET'])
+def get_rooms():
+    query = "select id, name from rooms"
+    rooms = query_db(query)
+    if not rooms:
+        return jsonify([]), 200
+    return jsonify([dict(r) for r in rooms]), 200
+
+
+
+@app.route('/api/rooms/<int:room_id>/messages', methods=['GET'])
+def get_all_messages(room_id):
+    api_key = request.headers.get('API-Key')
+    if not api_key:
+        return jsonify({"API Key not found!"}), 403
+    query = "select * from users where api_key = ?"
+    user = query_db(query, [api_key], one=True)
+    if user is None:
+        return {}, 403
+    query = "select messages.id as message_id, user_id, name, room_id, body from messages left join main.users u on u.id = messages.user_id where room_id =?"
+    messages = query_db(query, [room_id])
+    # returns an empty json list if there is no message
+    if messages is None:
+        return jsonify([]), 403
+    return jsonify([dict(m) for m in messages]), 200

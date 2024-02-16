@@ -31,7 +31,7 @@
     </div>
     <h1>Watch Party</h1>
     <h2>2</h2>
-    <button class="create" id="create-room-button">Create a Room</button> <!-- TODO: Show me only to logged-in users -->
+    <button class="create" id="create-room-button" onclick="createRoom()">Create a Room</button> <!-- TODO: Show me only to logged-in users -->
     <button class="signup" id="signup-button" onclick="window.location='http://127.0.0.1:5000/login';">Signup</button> <!-- TODO: Show me only to logged-out users -->
   </div>
 
@@ -70,7 +70,7 @@
         <label for="repeatPassword">Repeat: </label>
         <input type="password" name="repeatPassword" value="{{ password }}">
         <error>Passwords don't match</error>
-        <button class="exit goToSplash">Cool, let's go!</button>
+        <button class="exit goToSplash" onclick="window.location='http://127.0.0.1:5000/';">Cool, let's go!</button>
         <button class="exit logout" onclick="logout()">Log out</button>
       </div>
     </div>
@@ -109,7 +109,7 @@
     <div class="roomDetail">
       <div class="displayRoomName"> <!-- TODO: Show me by default. Hide when user clicks the edit icon below -->
         <h3>
-          Chatting in <strong>{{ room.name }}</strong>
+          Chatting in <strong id="room-name"></strong>
           <a><span class="material-symbols-outlined md-18">edit</span></a>
         </h3>
       </div>
@@ -120,7 +120,7 @@
         </h3>
       </div>
       Invite users to this chat at:
-      <a>/rooms/{{ room_id }}</a>
+      <a class="invite">/rooms/</a>
     </div>
     <div class="loginHeader">
       <div class="loggedIn">
@@ -141,30 +141,6 @@
           <button type="submit" value="Post">Post</button>
         </div>
         <div class="messages"> <!-- TODO: Replace with the content returned by the API -->
-          <message>
-            <author>Mr Chatterworth</author>
-            <content>Good evening! And how is everyone feeling?</content>
-          </message>
-          <message>
-            <author>big chats</author>
-            <content>gr8 lol</content>
-          </message>
-          <message>
-            <author>Mr Chatterworth</author>
-            <content>Splendid!</content>
-          </message>
-          <message>
-            <author>Chatty Cat</author>
-            <content>
-              Meow meow meow meow meow meow meow meow meow meow meow 
-              meow meow meow meow meow meow meow meow meow meow meow 
-              meow meow meow meow meow meow meow meow meow meow meow 
-            </content>
-          </message>
-          <message>
-            <author>Mr Chatterworth</author>
-            <content>Indeed, M. Cat. Indeed. 🧐</content>
-          </message>
         </div>
       </div>
       <div class="noMessages">
