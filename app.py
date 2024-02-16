@@ -70,9 +70,7 @@ def page_not_found(e):
 
 # TODO: Create the API
 
-'''
-API for sign up
-'''
+# API for sign up
 @app.route('/api/signup', methods=['POST'])
 def signUp():
     newUser = new_user()
@@ -83,3 +81,22 @@ def signUp():
         "api_key": newUser["api_key"],
     }), 200
 
+
+# API for log in
+@app.route('/api/login', methods=['POST'])
+def login():
+    if not request.json:
+        return jsonify({"Empty input"}), 400
+    username = request.json.get('username')
+    password = request.json.get('password')
+    query = "select * from users where name = ? AND password = ?"
+    user = query_db(query, (username, password))
+    if not user:
+        return jsonify({"User not found!"}), 403
+    print(user["id"], user["name"], user["password"], user["api_key"])
+    return jsonify({
+        "user_id": user["id"],
+        "user_name": user["name"],
+        "password": user["password"],
+        "api_key": user["api_key"],
+    }), 200
