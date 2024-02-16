@@ -31,7 +31,7 @@
     <h1>Watch Party</h1>
     <h2>2</h2>
     <button class="create">Create a Room</button> <!-- TODO: Show me only to logged-in users -->
-    <button class="signup">Signup</button> <!-- TODO: Show me only to logged-out users -->
+    <button class="signup" id="signup-button" onclick="window.location='http://127.0.0.1:5000/login';">Signup</button> <!-- TODO: Show me only to logged-out users -->
   </div>
 
   <h2>Rooms</h2>
@@ -95,7 +95,7 @@
         <div class="message">
           Oops, that username and password don't match any of our users!
         </div>
-        <button>Create a new Account</button>
+        <button onclick="signup()">Create a new Account</button>
       </div>
     </div>
   </div>

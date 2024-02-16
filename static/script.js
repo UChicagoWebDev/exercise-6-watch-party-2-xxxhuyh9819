@@ -37,7 +37,89 @@ repeatPasswordField.addEventListener("input", checkPasswordRepeat);
 //          login successfully, send them to their original destination
 //        - Hide all other pages
 
-// TODO:  When displaying a page, update the DOM to show the appropriate content for any element
+let CURRENT_ROOM = 0
+
+// A function to show a particular page according to the path
+let showOnly = (element) => {
+    PROFILE.classList.add("hide")
+    SPLASH.classList.add("hide")
+    LOGIN.classList.add("hide")
+    ROOM.classList.add("hide")
+    element.classList.remove("hide")
+}
+
+// the router that directs to different views using showOnly
+let router = () => {
+  const path = window.location.pathname
+  if (path === "/") {
+    showOnly(SPLASH)
+  } else if (path === "/profile") {
+    showOnly(PROFILE)
+  } else if (path === "/login") {
+    showOnly(LOGIN)
+  } else if (path.startsWith("/rooms/")) {
+    showOnly(ROOM)
+  } else {
+    console.log("Error!")
+  }
+}
+
+// update username in views
+function showUsername() {
+  let username = localStorage.getItem("user_name")
+  if (!username) {
+    username = "Guest"
+  }
+  document.querySelectorAll(".username").forEach(name => {
+      name.textContent = username;
+  })
+}
+
+// a function to hide the signup button to logged in users
+function hideSignupBtn() {
+  let signupBtn = document.getElementById("signup-button")
+  if (localStorage.getItem("api_key")) {
+    signupBtn.classList.add("hide")
+  }
+}
+
+function signup() {
+  const url = "/api/signup"
+  fetch(url, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then(response => {
+    return response.json()
+  }).then(user => {
+    localStorage.setItem("user_id", user.user_id)
+    localStorage.setItem("user_name", user.user_name)
+    localStorage.setItem("api_key", user.api_key)
+    console.log(user.user_id, user.user_name, user.api_key)
+
+    // update username on views once account is created
+    showUsername()
+    // once account is created, it's logged in, hence hiding the signup button on home page
+    hideSignupBtn()
+
+    alert("Account Created Successfully! Navigating to home page...")
+    history.pushState({ path: "/" }, "", "/")
+    window.dispatchEvent(new Event("popstate"))
+  }).catch((error) => {
+    console.log(`Error: ${error}`)
+  })
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  router()
+  showUsername()
+})
+
+window.addEventListener("popstate", router)
+
+
+// TODO:  When  displaying a page, update the DOM to show the appropriate content for any element
 //        that currently contains a {{ }} placeholder. You do not have to parse variable names out
 //        of the curly  braces—they are for illustration only. You can just replace the contents
 //        of the parent element (and in fact can remove the {{}} from index.html if you want).
