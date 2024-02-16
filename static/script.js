@@ -3,6 +3,7 @@ const SPLASH = document.querySelector(".splash");
 const PROFILE = document.querySelector(".profile");
 const LOGIN = document.querySelector(".login");
 const ROOM = document.querySelector(".room");
+const failedMsg = document.getElementById("failed-login-msg")
 
 // Custom validation on the password reset fields
 const passwordField = document.querySelector(".profile input[name=password]");
@@ -49,14 +50,17 @@ let showOnly = (element) => {
 }
 
 // the router that directs to different views using showOnly
-let router = () => {
+let route = () => {
   const path = window.location.pathname
   if (path === "/") {
     showOnly(SPLASH)
+    hideOrShowElements()
+
   } else if (path === "/profile") {
     showOnly(PROFILE)
   } else if (path === "/login") {
     showOnly(LOGIN)
+    failedMsg.classList.add("hide")
   } else if (path.startsWith("/rooms/")) {
     showOnly(ROOM)
   } else {
@@ -76,10 +80,15 @@ function showUsername() {
 }
 
 // a function to hide the signup button to logged in users
-function hideSignupBtn() {
+function hideOrShowElements() {
   let signupBtn = document.getElementById("signup-button")
+  let homeLoginBtn = document.getElementById("home-login")
+  let createRoomBtn = document.getElementById("create-room-button")
   if (localStorage.getItem("api_key")) {
     signupBtn.classList.add("hide")
+    homeLoginBtn.classList.add("hide")
+  } else {
+    createRoomBtn.classList.add("hide")
   }
 }
 
@@ -96,12 +105,11 @@ function signup() {
     localStorage.setItem("user_id", user.user_id)
     localStorage.setItem("user_name", user.user_name)
     localStorage.setItem("api_key", user.api_key)
-    console.log(user.user_id, user.user_name, user.api_key)
 
     // update username on views once account is created
     showUsername()
-    // once account is created, it's logged in, hence hiding the signup button on home page
-    hideSignupBtn()
+    // once account is created, it's logged in, hence hiding corresponding button on home page
+    hideOrShowElements()
 
     alert("Account Created Successfully! Navigating to home page...")
     history.pushState({ path: "/" }, "", "/")
@@ -111,12 +119,65 @@ function signup() {
   })
 }
 
+function login() {
+  let user_name = document.getElementById("username-input").value
+  let password = document.getElementById("password-input").value
+  fetch('/api/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      "user_name": user_name,
+      "password": password
+    }),
+  }).then(response => {
+    return response.json()
+  }).then(user => {
+    if (user.api_key) {
+      localStorage.setItem("user_id", user.user_id)
+      localStorage.setItem('user_name', user.user_name);
+      localStorage.setItem('api_key', user.api_key);
+
+      // Once logged in, there is api_key in Localstorage, hence hiding corresponding button on home page
+      hideOrShowElements()
+      alert("Logged In Successfully! Navigating to home page...")
+      failedMsg.classList.add("hide");
+      history.pushState({path: "/"}, "", "/")
+      showUsername()
+      window.dispatchEvent(new Event("popstate"))
+    } else {
+      failedMsg.classList.remove("hide");
+    }
+  }).catch(error => {
+    console.log(`Error: ${error}`)
+  })
+}
+
+// logout: clear Localstorage, go to home page, and update username on the view
+function logout() {
+
+  // if canceled, nothing happens
+  if (!confirm("Are you sure to log out?")) {
+    return
+  }
+  // if confirmed, do the job
+  localStorage.removeItem("user_id")
+  localStorage.removeItem("user_name")
+  localStorage.removeItem("api_key")
+  history.pushState({ path: "/" }, "", "/")
+  alert("Logged Out Successfully! Navigating to home page...")
+  route()
+  showUsername()
+  hideOrShowElements()
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-  router()
+  route()
   showUsername()
 })
 
-window.addEventListener("popstate", router)
+window.addEventListener("popstate", route)
 
 
 // TODO:  When  displaying a page, update the DOM to show the appropriate content for any element

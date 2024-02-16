@@ -11,10 +11,11 @@
 <div class="splash container"> <!-- TODO: Show me only on "/" -->
   <div class="splashHeader">
     <div class="loginHeader">
-      <div class="loggedOut"> <!-- TODO: Show me only to logged-out users -->
+        <!--src: https://stackoverflow.com/questions/16562577/how-can-i-make-a-button-redirect-my-page-to-another-page -->
+      <div class="loggedOut" id="home-login" onclick="window.location='http://127.0.0.1:5000/login';"> <!-- TODO: Show me only to logged-out users -->
         <a>Login</a>
       </div>
-      <div class="loggedIn"> <!-- TODO: Show me only to logged-in users -->
+      <div class="loggedIn" onclick="window.location='http://127.0.0.1:5000/profile';"> <!-- TODO: Show me only to logged-in users -->
         <a class="welcomeBack">
           <span class="username">Welcome back, {{ Username }}!</span>
           <span class="material-symbols-outlined md-18">person</span></a>
@@ -30,7 +31,7 @@
     </div>
     <h1>Watch Party</h1>
     <h2>2</h2>
-    <button class="create">Create a Room</button> <!-- TODO: Show me only to logged-in users -->
+    <button class="create" id="create-room-button">Create a Room</button> <!-- TODO: Show me only to logged-in users -->
     <button class="signup" id="signup-button" onclick="window.location='http://127.0.0.1:5000/login';">Signup</button> <!-- TODO: Show me only to logged-out users -->
   </div>
 
@@ -70,7 +71,7 @@
         <input type="password" name="repeatPassword" value="{{ password }}">
         <error>Passwords don't match</error>
         <button class="exit goToSplash">Cool, let's go!</button>
-        <button class="exit logout">Log out</button>
+        <button class="exit logout" onclick="logout()">Log out</button>
       </div>
     </div>
   </div> 
@@ -86,13 +87,13 @@
       <h3>Enter your username and password to log in:</h3>
       <div class="alignedForm login">
         <label for="username">Username</label>
-        <input name="username"></input>
-        <button>Login</button>
-        <label for="password">Password</label>
-        <input type="password" name="password">
+        <input name="username" id="username-input"></input>
+        <button onclick="login()">Login</button>
+        <label for="password" >Password</label>
+        <input type="password" name="password" id="password-input">
       </div>
       <div class="failed"> <!-- TODO: Hide me by default. Show only on failed login attempts -->
-        <div class="message">
+        <div class="message" id="failed-login-msg">
           Oops, that username and password don't match any of our users!
         </div>
         <button onclick="signup()">Create a new Account</button>
