@@ -97,3 +97,53 @@ def login():
         'password': user["password"],
         'api_key': user["api_key"],
     }), 200
+
+
+# @app.route('/api/user/name', methods=['POST'])
+# def update_username():
+#     api_key = request.headers.get('API_Key')
+#     if not api_key:
+#         print("No API key!")
+#         return {}, 403
+#     query = "select * from users where api_key = ?"
+#     user = query_db(query, api_key, one=True)
+#     user_id = user["id"]
+#     new_name = request.json.get('user_name')
+#     query = 'update users set name = ? where id = ?'
+#     query_db(query, (new_name, user_id), one=True)
+#     return jsonify({'message': f"Username: {new_user['name']} updated successfully"}), 200
+
+
+@app.route('/api/user/name', methods=['POST'])
+def update_username():
+    api_key = request.headers.get('API-Key')
+    if not api_key:
+        return jsonify({"API Key not found!"}), 403
+    query = "select * from users where api_key = ?"
+    user = query_db(query, [api_key], one=True)
+
+    if not request.json:
+        return jsonify(["Empty input"]), 400
+
+    user_id = user["id"]
+    user_name = request.json.get("user_name")
+    query = "update users set name = ? where id = ?"
+    query_db(query, (user_name, user_id), one=True)
+    return {}, 200
+
+
+@app.route('/api/user/password', methods=['POST'])
+def update_password():
+    api_key = request.headers.get('API-Key')
+    if not api_key:
+        return jsonify({"API Key not found!"}), 403
+    query = "select * from users where api_key = ?"
+    user = query_db(query, [api_key], one=True)
+
+    if not request.json:
+        return jsonify(["Empty input"]), 400
+    user_id = user["id"]
+    password = request.json.get("password")
+    query = "update users set password = ? where id = ?"
+    query_db(query, (password, user_id), one=True)
+    return {}, 200

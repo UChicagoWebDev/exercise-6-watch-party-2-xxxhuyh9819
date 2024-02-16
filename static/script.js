@@ -122,7 +122,8 @@ function signup() {
 function login() {
   let user_name = document.getElementById("username-input").value
   let password = document.getElementById("password-input").value
-  fetch('/api/login', {
+  const url = "/api/login"
+  fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -156,8 +157,8 @@ function login() {
 
 // logout: clear Localstorage, go to home page, and update username on the view
 function logout() {
-
   // if canceled, nothing happens
+  // src: https://phppot.com/javascript/javascript-confirm/
   if (!confirm("Are you sure to log out?")) {
     return
   }
@@ -178,6 +179,57 @@ window.addEventListener("DOMContentLoaded", () => {
 })
 
 window.addEventListener("popstate", route)
+
+function updateUsername() {
+  const API_KEY = localStorage.getItem('api_key');
+  let user_name = document.getElementById("update-username-input").value;
+  console.log(user_name)
+
+  const url = "/api/user/name"
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'API-Key': API_KEY
+    },
+    body: JSON.stringify({
+      "user_name": user_name
+    }),
+  }).then(response => {
+    return response.json()
+  }).then(() => {
+    localStorage.setItem('user_name', user_name);
+    alert("Username Updated Successfully!")
+    showUsername()
+  }).catch(error => {
+    console.log(`Error: ${error}`)
+  })
+}
+
+function updatePassword() {
+  const API_KEY = localStorage.getItem('api_key');
+  let password = document.getElementById("update-password-input").value;
+  console.log(password)
+
+  const url = "/api/user/password"
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'API-Key': API_KEY
+    },
+    body: JSON.stringify({
+      "password": password
+    }),
+  }).then(response => {
+    return response.json()
+  }).then(() => {
+    alert("Password Updated Successfully!")
+    showUsername()
+  }).catch(error => {
+    console.log(`Error: ${error}`)
+  })
+}
 
 
 // TODO:  When  displaying a page, update the DOM to show the appropriate content for any element

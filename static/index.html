@@ -62,11 +62,11 @@
       <h2>Welcome to Watch Party!</h2>
       <div class="alignedForm">
         <label for="username">Username: </label>
-        <input name="username" value="{{ username }}">
-        <button>update</button>
+        <input name="username" id="update-username-input" value="">
+        <button onclick="updateUsername()">update</button>
         <label for="password">Password: </label>
-        <input type="password" name="password" value="{{ password }}">
-        <button>update</button>
+        <input type="password" name="password" id="update-password-input" value="">
+        <button onclick="updatePassword()">update</button>
         <label for="repeatPassword">Repeat: </label>
         <input type="password" name="repeatPassword" value="{{ password }}">
         <error>Passwords don't match</error>
