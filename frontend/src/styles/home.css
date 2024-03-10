@@ -1,0 +1,130 @@
+.home {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    max-width: 100%;
+    overflow-x: hidden;
+    flex-direction: column;
+}
+
+.main-content {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+
+/*
+channels list
+ */
+
+.channels-list {
+    padding: calc(2px + 0.4vw);
+    margin: 10px;
+    border: 2px dashed #C00000;
+    flex: 0.2;
+}
+
+.channels-list ul {
+    margin-top: 10px;
+    padding: 10px;
+    list-style: none;
+}
+
+.title_block {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: calc(8px + 1.5625vw);
+}
+
+.title_block input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.title button {
+    font-family: Monaco, sans-serif;
+    background-color: #800000;
+    color: white;
+    transition: 0.5s background-color ease-in-out;
+}
+
+.title button:hover {
+    background-color: #C00000;
+}
+
+.selected {
+    color: #C00000;
+    font-weight: bold;
+}
+
+.other:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    font-weight: bold;
+}
+
+
+.channel-messages {
+    padding: 10px;
+    margin: 10px;
+    border: 2px dashed #C00000;
+    flex: 0.6;
+}
+
+.channel-details {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.channel-details span{
+    font-size: 2rem;
+}
+
+.message-replies {
+    padding: 10px;
+    margin: 10px;
+    border: 2px dashed #C00000;
+    flex: 0.3;
+}
+
+@media screen and (max-width: 1200px) {
+    .message-replies {
+    display: none;
+    }
+    .channel-messages {
+        flex: 1
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .message-replies {
+    display: none;
+    }
+    .channel-messages {
+    display: none;
+    }
+    .channels-list {
+        flex: 1
+    }
+}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,105 @@
+.home {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+}
+
+.contents {
+    display: flex;
+    justify-content: center;
+}
+
+.login-box {
+    margin: calc(8px + 1.5625vw);
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    text-align: left;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #800000;
+}
+
+.btn-login {
+    margin-top: 10px;
+    font-weight: bold;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #800000;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: #C00000;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.main-content {
+    display: flex;
+    flex-grow: 1;
+}
+
+.channel-content {
+    flex-basis: 30%;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    color: #333333;
+}
+
+.message-thread {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #FFFFFF;
+    color: #333333;
+}
+
+
+  

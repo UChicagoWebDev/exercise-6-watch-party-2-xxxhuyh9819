@@ -5,7 +5,7 @@ create table users (
   api_key VARCHAR(40)
 );
 
-create table rooms (
+create table channel (
     id INTEGER PRIMARY KEY,
     name VARCHAR(40) UNIQUE
 );
@@ -13,8 +13,8 @@ create table rooms (
 create table messages (
   id INTEGER PRIMARY KEY,
   user_id INTEGER,
-  room_id INTEGER,
+  channel_id INTEGER,
   body TEXT,
   FOREIGN KEY(user_id) REFERENCES users(id),
-  FOREIGN KEY(room_id) REFERENCES rooms(id)
+  FOREIGN KEY(channel_id) REFERENCES rooms(id)
 );
