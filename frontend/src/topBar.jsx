@@ -5,7 +5,7 @@ import './styles/topBar.css';
 function TopBar({LoginCredentials, username}) {
 
     function handleLogOut() {
-        if (window.confirm("Do you really want to leave?")) {
+        if (window.confirm("Do you really want to log out?")) {
             localStorage.clear()
             LoginCredentials(null)
         }

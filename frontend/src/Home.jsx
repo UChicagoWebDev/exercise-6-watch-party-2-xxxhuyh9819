@@ -1,29 +1,35 @@
-import React, {useEffect, useState} from 'react';
+import React, {useDebugValue, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './styles/home.css';
 import TopBar from "./topBar";
+import ChannelDetails from "./channelDetails";
+import ChannelReplies from "./channelReplies";
 
 function Home({LoginCredentials}) {
+
+    let selectedChannelID= Number(window.location.pathname.split('/')[2]);
 
     const api_key = localStorage.getItem("yunhaohu_belay_api_key")
     let username = localStorage.getItem("user_name");
 
     const navigate = useNavigate()
     const [totalChannels, setTotalChannels] = useState(0);
-    const [selectedChannel, setSelectedChannel] = useState(null);
     const [channels, setChannels] = useState([])
-    const [channelName, setChannelName] = useState()
-    const [messages, setMessages] = useState()
+    const [channelName, setChannelName] = useState("")
+    const [selectedMessage, setSelectedMessage] = useState(null)
 
     const baseUrl = "http://127.0.0.1:5000"
 
     // src: https://stackoverflow.com/questions/63605682/reactjs-call-function-on-startup-of-application-with-a-functional-component
     useEffect(() => {
-        getChannels();
-        // getMessagesByChannel(selectedChannelId)
+        getChannels()
         setInterval(()=>getChannels(), 1000);
-        // setInterval(()=>getMessagesByChannel(selectedChannelId), 500);
     }, []);
+
+    function handleSelectMessage(message) {
+        setSelectedMessage(message)
+    }
+
 
     function getChannels() {
         fetch(baseUrl +'/api/channels', {
@@ -34,21 +40,46 @@ function Home({LoginCredentials}) {
         }).then(response => response.json())
             .then(data => {
                 setChannels(data)
-                console.log(data)
             }).catch(error => console.log(error))
     }
 
-    function handleCreateChannel() {
-
+    function handleCreateChannel(e) {
+        e.preventDefault();
+        if (channelName === "") {
+            alert("Channel can not be empty!")
+            return;
+        }
+        let url = `/api/new_channel`
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': api_key
+            },
+            body: JSON.stringify({
+                api_key: api_key,
+                channel_name: channelName,
+            })
+        }).then(response => {
+            return response.json()
+        }).then(data => {
+            if (data.code === 200) {
+                setChannels([ // with a new array
+                    ...channels, // that contains all the old items
+                    data.channel // and one new item at the end
+                ])
+            }
+            alert(data.msg);
+            setChannelName("")
+        }).catch(error => {
+            console.error('Unknown error:', error);
+        })
     }
 
-    function handleSelectedChannel(channel) {
-        setSelectedChannel(channel)
-        // getMessagesByChannel(channel.id)
-        console.log(selectedChannel)
+    function handleSelectedChannel(e, channel) {
+        e.preventDefault()
         navigate(`/channel/${channel.id}`)
     }
-
 
     return <div className="home">
 
@@ -68,6 +99,7 @@ function Home({LoginCredentials}) {
                            placeholder="Enter the new channel's name"
                            value={channelName}
                            onChange={(e) => {
+                               console.log(channelName)
                                setChannelName(e.target.value)
                            }}
                            required/>
@@ -77,9 +109,13 @@ function Home({LoginCredentials}) {
                         return (
                             <li
                                 key={data.id}
-                                onClick={() => handleSelectedChannel(data)}
-                                className={selectedChannel !== null && data.id === selectedChannel.id ? "selected": "other"}>
-                                {data.name}
+                                onClick={(e) => handleSelectedChannel(e, data)}
+                                className={data.id === selectedChannelID ? "selected": "other"}>
+                                {<div className="channel-wrapper">
+                                    <div>{`#${data.id}`}</div>
+                                    <div>{data.name}</div>
+                                </div>
+                                }
                             </li>
                         )
                     })}
@@ -87,26 +123,11 @@ function Home({LoginCredentials}) {
 
             </div>
 
-            <div className="channel-messages">
-                <div className="channel-details">
-                    <span>{selectedChannel ? `#${selectedChannel.name}` : "Click to enter a channel!"}</span>
+            <ChannelDetails LoginCredentials={LoginCredentials} SelectedChannelId={selectedChannelID} SelectedMessage={handleSelectMessage}/>
 
-                    {/*<ul>*/}
-                    {/*    {messages.map((message) => {*/}
-                    {/*        return (*/}
-                    {/*            <li*/}
-                    {/*                key={message.id}>*/}
-                    {/*                {message.body}*/}
-                    {/*                /!*{message.id}*!/*/}
-                    {/*            </li>*/}
-                    {/*        )*/}
-                    {/*    })}*/}
-                    {/*    <li>{messages[0].body}</li>*/}
-                    {/*</ul>*/}
+            <ChannelReplies LoginCredentials={LoginCredentials} SelectedMessage={handleSelectMessage}/>
 
-                </div>
-
-            </div>
+            {/*</div>*/}
 
             <div className="message-replies">
                 <h1>Replies</h1>

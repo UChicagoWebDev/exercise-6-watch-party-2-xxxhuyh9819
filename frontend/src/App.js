@@ -4,10 +4,11 @@ import Login from "./login";
 import {useState} from "react";
 import SignUp from "./signUp";
 import Profile from "./profile";
+import PageNotFound from "./404";
 
 function App() {
   const [loginStatus, setLoginStatus] =
-      useState(localStorage.getItem("user_id") === null ? null : localStorage.getItem("user_id"))
+  useState(localStorage.getItem("user_id") === null ? null : localStorage.getItem("user_id"))
 
     // respond to the child prop (login/signup has been successful)
     // let App check if there is corresponding user info in localStorage
@@ -38,12 +39,7 @@ function App() {
                 <Route exact path="/channel/:channelId" element={loginStatus ? <Home LoginCredentials={handleLoginStatus}/>
                     : <Navigate replace to={"/login"}/>} />
 
-                {/*<Route exact path="/channel/:channelId" element={loginStatus ? <Home LoginStatus={handleLoginStatus}/>*/}
-                {/*    : <Navigate replace to="/login" />} />*/}
-
-
-
-
+                <Route exact path="/404" element=<PageNotFound LoginCredentials={handleLoginStatus}/> />
             </Routes>
         </BrowserRouter>
     );
